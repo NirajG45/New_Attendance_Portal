@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Timer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/timer.css') }}">
+</head>
+    <style>
+    .btn-download {
+        padding: 10px 16px;
+        background-color: #2563eb;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+
+    .btn-download:hover {
+        background-color: #1e40af;
+    }
+</style>
+<body>
+    <div class="container">
+        <h1>✅ Attendance Marked Successfully!, After:</h1>
+        <p>Session will end in:</p>
+        <div id="timer">30:00</div>
+    </div>
+
+        <div class="container">
+            <h1>Attendance Page</h1>
+            <!-- 👇 Paste here for test -->
+            <a href="/download_attendance_report" target="_blank">📥 Download Attendance Report (PDF)</a>
+        </div>
+    
+
+    <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+</body>
+</html>
