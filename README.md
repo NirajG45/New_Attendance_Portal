@@ -36,5 +36,29 @@ It’s not just an app — it’s a **movement towards smarter education**.
 
 ---
 
+## 👥 User Experience Flow
+
+### 🎓 Students:
+- ✅ **Login & profile access**
+- 📊 **View personal attendance records**
+- ⏳ **Monitor daily/monthly stats**
+
+### 🧑‍🏫 Teachers:
+- ✅ **Secure login with real-time location validation**
+- 📍 **Mark attendance for live sessions only if on campus**
+- 📈 **Export reports and analyze class attendance patterns**
+
+---
+
+## 🖼️ Visual Previews
+
+> 📸 Add real screenshots to the `/screenshots` folder for live demo previews
+
+```md
+![Login](screenshots/login.png)
+![Student Dashboard](screenshots/student_dashboard.png)
+![Teacher Panel](screenshots/teacher_dashboard.png)
+
+
 ## 🧬 Tech Stack Snapshot
 
