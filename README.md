@@ -55,9 +55,10 @@ It’s not just an app — it’s a **movement towards smarter education**.
 > 📸 Add real screenshots to the `/screenshots` folder for live demo previews
 
 ```md
-![Login](screenshots/login.png)
-![Student Dashboard](screenshots/student_dashboard.png)
-![Teacher Panel](screenshots/teacher_dashboard.png)
+![Login](screenshots/home.png)
+![Student Dashboard](screenshot/teacher_dashboard.jpg)
+![Student Dashboard](screenshots/student_login.png)
+![Teacher Panel](screenshots/teacher_login.png)
 
 
 ## 🧬 Tech Stack Snapshot
