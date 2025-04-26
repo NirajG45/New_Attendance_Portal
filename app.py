@@ -145,7 +145,7 @@ def home():
 def download_file():
     return send_file('path_to_your_file.txt', as_attachment=True)
 
-
+# Route for teacher registration
 @app.route("/teacher_register", methods=["GET", "POST"])
 def teacher_register():
     if request.method == "POST":
@@ -158,6 +158,7 @@ def teacher_register():
     else:
         return render_template("teacher_register.html")
 
+# Route for teacher login
 @app.route("/teacher_login", methods=["GET","POST"])
 def teacher_login():
     if request.method == "POST":
@@ -176,6 +177,7 @@ def teacher_login():
     else:
         return render_template("teacher_login.html")
     
+# Route for student registration 
 @app.route("/student_register", methods=["GET", "POST"])
 def student_register():
     if request.method == 'POST':
@@ -208,7 +210,7 @@ def student_register():
     # Handle GET request - render the registration form
     return render_template("student_register.html")
 
-
+# Route for student login
 @app.route("/student_login", methods=["GET", "POST"])
 def student_login():
     if request.method == "POST":
@@ -261,7 +263,7 @@ def student_login():
 def timer_page():
     return render_template("timer.html")
 
-
+# Route for teacher dashboard
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
     if request.method == "GET":
@@ -273,6 +275,42 @@ def dashboard():
         save_attendance_code(t_code)  # Store code in database
         
         return jsonify({"t_code": t_code})
+    
+    # Route for fetching attendance summary data for a specific teacher 
+    @app.route("/attendance_summary", methods=["GET"])
+    def attendance_summary():
+        teacher_id = request.args.get('teacher_id')  # From frontend
+        if not teacher_id:
+            return jsonify({"success": False, "message": "Teacher ID is required!"}), 400
+
+        with db_manager.get_connection() as conn:
+            cursor = conn.cursor()
+
+            # Get Teacher Name
+            cursor.execute("SELECT name FROM teachers WHERE teacher_id = ?", (teacher_id,))
+            teacher = cursor.fetchone()
+            if not teacher:
+                return jsonify({"success": False, "message": "Teacher not found!"}), 404
+
+            teacher_name = teacher["name"]
+
+            # Get Students who marked attendance with this teacher
+            today = datetime.utcnow().strftime("%Y-%m-%d")
+            cursor.execute("""
+                SELECT s.student_id, s.name 
+                FROM attendance a
+                JOIN students s ON a.student_id = s.student_id
+                WHERE a.teacher_id = ? AND a.date = ?
+            """, (teacher_id, today))
+
+            students = [{"student_id": row["student_id"], "student_name": row["name"]} for row in cursor.fetchall()]
+
+            return jsonify({
+                "success": True,
+                "teacher_name": teacher_name,
+                "total_present": len(students),
+                "students": students
+            }), 200
 
 
 if __name__ == "__main__":
