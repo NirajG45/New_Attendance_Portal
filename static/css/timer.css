@@ -40,6 +40,19 @@ h1 {
     color: #008000;  /* Green color */
 }
 
+.btn-download {
+    padding: 10px 16px;
+    background-color: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.btn-download:hover {
+    background-color: #1e40af;
+}
+
 a.btn-download {
     display: inline-block;
     margin-top: 30px;
