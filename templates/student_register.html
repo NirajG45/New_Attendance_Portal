@@ -18,62 +18,62 @@
     <p id="message"></p>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const studentRegisterForm = document.getElementById('student-register-form');
+    <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const studentRegisterForm = document.getElementById('student-register-form');
 
-      studentRegisterForm.addEventListener('submit', async function (event) {
-        event.preventDefault(); // Prevent default form submission
+    studentRegisterForm.addEventListener('submit', async function (event) {
+      event.preventDefault(); // Prevent default form submission
 
-        // Collect the form data
-        const studentName = document.getElementById('student_name').value.trim();
-        const studentId = document.getElementById('student_id').value.trim();
-        const studentPassword = document.getElementById('student_password').value.trim();
+      const studentName = document.getElementById('student_name').value.trim();
+      const studentId = document.getElementById('student_id').value.trim();
+      const studentPassword = document.getElementById('student_password').value.trim();
 
-        // Check if all fields are filled
-        if (!studentName || !studentId || !studentPassword) {
-          document.getElementById('message').textContent = 'All fields are required!';
-          document.getElementById('message').style.color = 'red';
-          return;
-        }
+      if (!studentName || !studentId || !studentPassword) {
+        document.getElementById('message').textContent = 'All fields are required!';
+        document.getElementById('message').style.color = 'red';
+        return;
+      }
 
-        // Prepare data to send in the request
-        const data = {
-          name: studentName,
-          student_id: studentId,
-          password: studentPassword
-        };
+      const data = {
+        name: studentName,
+        student_id: studentId,
+        password: studentPassword
+      };
 
-        try {
-          // Send the POST request using fetch API
-          const response = await fetch('/student_register', {
-            method: 'POST',
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
+      try {
+        const response = await fetch('/student_register', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
-          // Attempt to parse the JSON response
-          const responseData = await response.json();
-
-          if (!response.ok) {
-            throw new Error(responseData.message || "Failed to register.");
-          }
-
+        if (response.ok) {
           // Registration successful
           document.getElementById('message').textContent = 'Registration successful!';
           document.getElementById('message').style.color = 'green';
-          studentRegisterForm.reset(); // Clear form
+          studentRegisterForm.reset(); 
 
-        } catch (error) {
-          // If any error occurs
-          console.error('Error:', error);
-          document.getElementById('message').textContent = 'Error: ' + error.message;
-          document.getElementById('message').style.color = 'red';
+          // Redirect to home page after 1 second
+          setTimeout(() => {
+            window.location.href = "/home";
+          }, 1000);
+
+        } else {
+          // Registration failed
+          const responseData = await response.json();
+          throw new Error(responseData.message || "Failed to register.");
         }
-      });
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('message').textContent = 'Error: ' + error.message;
+        document.getElementById('message').style.color = 'red';
+      }
     });
-  </script>
+  });
+</script>
 </body>
 </html>

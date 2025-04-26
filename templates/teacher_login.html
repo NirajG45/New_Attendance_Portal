@@ -5,52 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/teacher_login.css') }}">
-    <script>
-        async function loginTeacher(event) {
-            event.preventDefault(); // Prevent form submission
-
-            var teacherId = document.getElementById("teacher_id").value;
-            var teacherPassword = document.getElementById("teacher_password").value;
-
-            // Validate the input fields
-            if (teacherId === "" || teacherPassword === "") {
-                alert("Please fill in both Teacher ID and Password.");
-                return;
-            }
-
-            // Prepare the data to be sent
-            const loginData = {
-                teacher_id: teacherId,
-                password: teacherPassword
-            };
-
-            try {
-                // Send the login data via fetch to the server
-                const response = await fetch('http://localhost:5001/teacher_login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(loginData)
-                });
-
-                // Parse the JSON response
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Handle successful login
-                    alert('Login successful!');
-                    window.location.href = '/dashboard'; // Redirect to dashboard (or your desired page)
-                } else {
-                    // Handle failed login
-                    alert('Login failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error during login:', error);
-                alert('An error occurred. Please try again later.');
-            }
-        }
-    </script>
 </head>
 <body>
     <div class="container">
@@ -67,5 +21,67 @@
 
         <p>Don't have an account? <a href="/teacher_register">Register here</a></p>
     </div>
+
+    <script>
+        async function loginTeacher(event) {
+            event.preventDefault(); // Prevent form submission
+
+            var teacherId = document.getElementById("teacher_id").value;
+            var teacherPassword = document.getElementById("teacher_password").value;
+
+            // Validate the input fields
+            if (teacherId === "" || teacherPassword === "") {
+                alert("Please fill in both Teacher ID and Password.");
+                return;
+            }
+
+            // Get teacher's current location using Geolocation API
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function (position) {
+                    var teacherLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+
+                    // Prepare the data to be sent
+                    const loginData = {
+                        teacher_id: teacherId,
+                        password: teacherPassword,
+                        location: teacherLocation // Send the location with login data
+                    };
+
+                    try {
+                        // Send the login data via fetch to the server
+                        const response = await fetch('http://localhost:5001/teacher_login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(loginData)
+                        });
+
+                        // Parse the JSON response
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            // Handle successful login
+                            alert('Login successful!');
+                            window.location.href = '/dashboard'; // Redirect to dashboard (or your desired page)
+                        } else {
+                            // Handle failed login
+                            alert('Login failed: ' + data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error during login:', error);
+                        alert('An error occurred. Please try again later.');
+                    }
+                }, function (error) {
+                    alert('Error fetching location: ' + error.message);
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
 </body>
 </html>

@@ -25,15 +25,19 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => response.json())
       .then((result) => {
         document.getElementById("message").innerText = result.message;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        document.getElementById("message").innerText = "Error occurred!";
-      });
-  });
+        
+      // Redirect to home page if registration is successful
+      if (result.success) {
+        setTimeout(function() {
+          window.location.href = '/';  // Assuming home page is '/'
+        }, 1000);  // Delay to show message before redirecting
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      document.getElementById("message").innerText = "Error occurred!";
+    });
+});
 
-  
-  
- 
 });
 

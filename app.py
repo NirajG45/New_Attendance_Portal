@@ -175,6 +175,7 @@ def teacher_login():
         return jsonify(response), status_code
     else:
         return render_template("teacher_login.html")
+    
 @app.route("/student_register", methods=["GET", "POST"])
 def student_register():
     if request.method == 'POST':
