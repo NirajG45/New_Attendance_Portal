@@ -8,7 +8,9 @@
 </head>
 <body>
   <div class="container">
-    <h1>Welcome to the Student Portal</h1>
+    <h1 id="greeting">Welcome!</h1>
+    <p id="date"></p>
+
     <nav>
       <ul>
         <li><a href="{{ url_for('teacher_register') }}">Teacher Register</a></li>
@@ -18,5 +20,32 @@
       </ul>
     </nav>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const greetingElement = document.getElementById('greeting');
+      const dateElement = document.getElementById('date');
+      const now = new Date();
+      const hours = now.getHours();
+
+      let greetingText = "";
+
+      if (hours >= 5 && hours < 12) {
+        greetingText = "Good Morning! 🌞";
+      } else if (hours >= 12 && hours < 17) {
+        greetingText = "Good Afternoon! ☀️";
+      } else if (hours >= 17 && hours < 21) {
+        greetingText = "Good Evening! 🌇";
+      } else {
+        greetingText = "Good Night! 🌙";
+      }
+
+      greetingElement.textContent = greetingText;
+
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const formattedDate = now.toLocaleDateString('en-US', options);
+      dateElement.textContent = `Today is ${formattedDate}`;
+    });
+  </script>
 </body>
 </html>
