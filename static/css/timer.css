@@ -1,6 +1,6 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to right, #dbeafe, #e0f2fe);
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom right, #e2e8f0, #cbd5e1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10,23 +10,48 @@ body {
 
 .container {
     background-color: #ffffff;
-    border-radius: 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
     padding: 40px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
     max-width: 400px;
     width: 90%;
 }
 
 h1 {
-    color: #1d4ed8;
-    font-size: 24px;
-    margin-bottom: 10px;
+    color: #1e293b;
+    font-size: 26px;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
+/* Normal running timer */
 #timer {
     font-size: 48px;
     color: #111827;
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
+}
+
+/* Jab timer complete ho aur "You are present!" dikhe */
+#timer.present-text {
+    font-size: 32px; /* Medium font size */
+    color: #008000;  /* Green color */
+}
+
+a.btn-download {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 12px 24px;
+    background-color: #2563eb;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+a.btn-download:hover {
+    background-color: #1d4ed8;
 }

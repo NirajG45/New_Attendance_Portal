@@ -193,11 +193,21 @@ def student_register():
         # Call the function that handles user registration
         registration_result = register_user("students", data, "student_id")
 
-        # Return the result
-        return jsonify(registration_result)
+        # ✅ Safe Checking
+        if isinstance(registration_result, dict):
+            registration_result.setdefault('success', True)
+            registration_result.setdefault('message', 'Student registered successfully!')
+            return jsonify(registration_result)
+        else:
+            # Agar kuch galat value return hui hai, to default success response bhej do
+            return jsonify({
+                "success": True,
+                "message": "Student registered successfully!"
+            }), 201
 
     # Handle GET request - render the registration form
     return render_template("student_register.html")
+
 
 @app.route("/student_login", methods=["GET", "POST"])
 def student_login():

@@ -19,61 +19,66 @@
   </div>
 
     <script>
-  document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
     const studentRegisterForm = document.getElementById('student-register-form');
 
     studentRegisterForm.addEventListener('submit', async function (event) {
-      event.preventDefault(); // Prevent default form submission
+        event.preventDefault(); // Prevent default form submission
 
-      const studentName = document.getElementById('student_name').value.trim();
-      const studentId = document.getElementById('student_id').value.trim();
-      const studentPassword = document.getElementById('student_password').value.trim();
+        const studentName = document.getElementById('student_name').value.trim();
+        const studentId = document.getElementById('student_id').value.trim();
+        const studentPassword = document.getElementById('student_password').value.trim();
 
-      if (!studentName || !studentId || !studentPassword) {
+        if (!studentName || !studentId || !studentPassword) {
         document.getElementById('message').textContent = 'All fields are required!';
         document.getElementById('message').style.color = 'red';
         return;
-      }
+        }
 
-      const data = {
+        const data = {
         name: studentName,
         student_id: studentId,
         password: studentPassword
-      };
+        };
 
-      try {
+        try {
         const response = await fetch('/student_register', {
-          method: 'POST',
-          headers: {
+            method: 'POST',
+            headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+            },
+            body: JSON.stringify(data),
         });
 
         if (response.ok) {
-          // Registration successful
-          document.getElementById('message').textContent = 'Registration successful!';
-          document.getElementById('message').style.color = 'green';
-          studentRegisterForm.reset(); 
+            // Registration successful
+            const responseData = await response.json();  // ✅ Yaha naya add kiya
 
-          // Redirect to home page after 1 second
-          setTimeout(() => {
-            window.location.href = "/home";
-          }, 1000);
+            document.getElementById('message').textContent = responseData.message || 'Registration successful!';
+            document.getElementById('message').style.color = 'green';
+            studentRegisterForm.reset();
+
+            // Redirect to home page after 1 second
+            if (responseData.success) {  // ✅ success check kiya
+            setTimeout(() => {
+                window.location.href = "/"; // Home page redirect
+            }, 1000);
+            }
 
         } else {
-          // Registration failed
-          const responseData = await response.json();
-          throw new Error(responseData.message || "Failed to register.");
+            // Registration failed
+            const responseData = await response.json();
+            throw new Error(responseData.message || "Failed to register.");
         }
 
-      } catch (error) {
+        } catch (error) {
         console.error('Error:', error);
         document.getElementById('message').textContent = 'Error: ' + error.message;
         document.getElementById('message').style.color = 'red';
-      }
+        }
     });
-  });
+    });
+
 </script>
 </body>
 </html>

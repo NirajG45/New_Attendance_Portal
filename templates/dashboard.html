@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard</title>
-    <!-- <link rel="stylesheet" href="new_static/style.css"> -->
 </head>
 <style>
     /* style.css */
@@ -115,7 +114,6 @@ button:hover {
             <h3>Today's Attendance Code</h3>
             <p id="message">----</p>
             <button id="generateCode">Generate Code</button>
-            <button id="copyCode">Copy Code</button>
         </div>
     </div>
 
@@ -154,23 +152,8 @@ button:hover {
             });
         }
 
-        // Function to copy the generated code to the clipboard
-        function copyCode() {
-            const messageElement = document.getElementById('message');
-            const codeText = messageElement.textContent.replace("Generated Code: ", "").trim();
-
-            if (codeText !== "----") {
-                navigator.clipboard.writeText(codeText)
-                    .then(() => alert("Code copied to clipboard!"))
-                    .catch(err => console.error("Error copying text: ", err));
-            } else {
-                alert("No code to copy!");
-            }
-        }
-
-        // Add event listeners to buttons
+        // Add event listener to the "Generate Code" button
         document.getElementById("generateCode").addEventListener("click", generateCode);
-        document.getElementById("copyCode").addEventListener("click", copyCode);
 
         // Update date on page load
         updateDate();
