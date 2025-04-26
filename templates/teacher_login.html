@@ -21,7 +21,6 @@
 
         <p>Don't have an account? <a href="/teacher_register">Register here</a></p>
     </div>
-
     <script>
         async function loginTeacher(event) {
             event.preventDefault(); // Prevent form submission
@@ -35,51 +34,36 @@
                 return;
             }
 
-            // Get teacher's current location using Geolocation API
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async function (position) {
-                    var teacherLocation = {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    };
+            // Prepare the data to be sent
+            const loginData = {
+                teacher_id: teacherId,
+                password: teacherPassword
+            };
 
-                    // Prepare the data to be sent
-                    const loginData = {
-                        teacher_id: teacherId,
-                        password: teacherPassword,
-                        location: teacherLocation // Send the location with login data
-                    };
-
-                    try {
-                        // Send the login data via fetch to the server
-                        const response = await fetch('http://localhost:5001/teacher_login', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(loginData)
-                        });
-
-                        // Parse the JSON response
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            // Handle successful login
-                            alert('Login successful!');
-                            window.location.href = '/dashboard'; // Redirect to dashboard (or your desired page)
-                        } else {
-                            // Handle failed login
-                            alert('Login failed: ' + data.message);
-                        }
-                    } catch (error) {
-                        console.error('Error during login:', error);
-                        alert('An error occurred. Please try again later.');
-                    }
-                }, function (error) {
-                    alert('Error fetching location: ' + error.message);
+            try {
+                // Send the login data via fetch to the server
+                const response = await fetch('http://localhost:5001/teacher_login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
                 });
-            } else {
-                alert("Geolocation is not supported by this browser.");
+
+                // Parse the JSON response
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Handle successful login
+                    alert('Login successful!');
+                    window.location.href = '/dashboard'; // Redirect to dashboard (or your desired page)
+                } else {
+                    // Handle failed login
+                    alert('Login failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert('An error occurred. Please try again later.');
             }
         }
     </script>
