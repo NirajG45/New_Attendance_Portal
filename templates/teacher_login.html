@@ -23,47 +23,55 @@
     </div>
     <script>
         async function loginTeacher(event) {
-            event.preventDefault(); // Prevent form submission
+            event.preventDefault();
 
             var teacherId = document.getElementById("teacher_id").value;
             var teacherPassword = document.getElementById("teacher_password").value;
 
-            // Validate the input fields
             if (teacherId === "" || teacherPassword === "") {
                 alert("Please fill in both Teacher ID and Password.");
                 return;
             }
 
-            // Prepare the data to be sent
-            const loginData = {
-                teacher_id: teacherId,
-                password: teacherPassword
-            };
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
 
-            try {
-                // Send the login data via fetch to the server
-                const response = await fetch('http://localhost:5001/teacher_login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(loginData)
+                    const loginData = {
+                        teacher_id: teacherId,
+                        password: teacherPassword,
+                        latitude: latitude,
+                        longitude: longitude
+                    };
+
+                    try {
+                        const response = await fetch('/teacher_login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(loginData),
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            console.log("success");
+                            alert('Login successful!');
+                            window.location.href = '/dashboard';
+                        } else {
+                            alert('Login failed: ' + data.message);
+                        }
+                    } catch (error) {
+                        console.error('Error during login:', error);
+                        alert('An error occurred. Please try again later.');
+                    }
+                }, function(error) {
+                    alert("Location access denied. Please allow location to login.");
                 });
-
-                // Parse the JSON response
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Handle successful login
-                    alert('Login successful!');
-                    window.location.href = '/dashboard'; // Redirect to dashboard (or your desired page)
-                } else {
-                    // Handle failed login
-                    alert('Login failed: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error during login:', error);
-                alert('An error occurred. Please try again later.');
+            } else {
+                alert("Geolocation is not supported by this browser.");
             }
         }
     </script>

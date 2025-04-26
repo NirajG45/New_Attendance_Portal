@@ -33,7 +33,7 @@
         const loginButton = document.getElementById("login-button");
 
         loginForm.addEventListener("submit", async function (event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
 
             const studentId = document.getElementById("student_id").value.trim();
             const studentPassword = document.getElementById("student_password").value.trim();
@@ -45,14 +45,34 @@
                 return;
             }
 
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async function(position) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    const loginData = {
+                        student_id: studentId,
+                        student_password: studentPassword,
+                        teacher_code: teacherCode,
+                        latitude: latitude,
+                        longitude: longitude
+                    };
+
+                    await sendLoginData(loginData);
+
+                }, function(error) {
+                    loginMessage.textContent = "Location access denied. Please allow location access.";
+                    loginMessage.style.color = "red";
+                });
+            } else {
+                loginMessage.textContent = "Geolocation is not supported.";
+                loginMessage.style.color = "red";
+            }
+        });
+
+        async function sendLoginData(loginData) {
             loginButton.disabled = true;
             loginButton.textContent = "Logging in...";
-
-            const loginData = {
-                student_id: studentId,
-                student_password: studentPassword,
-                teacher_code: teacherCode
-            };
 
             try {
                 const response = await fetch('/student_login', {
@@ -67,7 +87,6 @@
                     throw new Error(responseData.message || "Login failed.");
                 }
 
-                // ✅ Redirect to /timer after successful login
                 loginMessage.textContent = "Login successful! Redirecting to timer...";
                 loginMessage.style.color = "green";
 
@@ -83,7 +102,7 @@
                 loginButton.disabled = false;
                 loginButton.textContent = "Login";
             }
-        });
+        }
     });
     </script>
 </body>
