@@ -79,6 +79,29 @@
     });
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+    // IDs ke input fields ko select karo
+    const studentIdInput = document.getElementById("student_id");
+    const teacherIdInput = document.getElementById("teacher_id");
+
+    // Function to auto-uppercase
+    function autoUppercase(inputElement) {
+        inputElement.addEventListener("input", function () {
+            this.value = this.value.toUpperCase();
+        });
+    }
+
+    // Student ID field mein uppercase lagao agar exist karta hai
+    if (studentIdInput) {
+        autoUppercase(studentIdInput);
+    }
+
+    // Teacher ID field mein uppercase lagao agar exist karta hai
+    if (teacherIdInput) {
+        autoUppercase(teacherIdInput);
+    }
+});
+
 </script>
 </body>
 </html>
