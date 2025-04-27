@@ -1,26 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
     const timerElement = document.getElementById("timer");
 
+    let endTime = localStorage.getItem('timerEndTime');
+    let timerCompleted = localStorage.getItem('timerCompleted');
+
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
         const secs = (seconds % 60).toString().padStart(2, '0');
         return `${minutes}:${secs}`;
     }
 
-    function startCountdown(durationInSeconds) {
-        const endTime = Date.now() + durationInSeconds * 1000;
-        localStorage.setItem('timerEndTime', endTime);
-        localStorage.removeItem('timerCompleted');
-        runTimer(endTime);
-    }
-
-    function runTimer(endTime) {
-        const timerInterval = setInterval(() => {
+    function startTimer(endTimestamp) {
+        function updateTimer() {
             const now = Date.now();
-            const timeLeft = Math.floor((endTime - now) / 1000);
+            const timeLeft = Math.floor((endTimestamp - now) / 1000);
 
             if (timeLeft <= 0) {
-                clearInterval(timerInterval);
+                clearInterval(countdown);
                 timerElement.textContent = "You are present!";
                 timerElement.style.color = "#008000";
                 localStorage.setItem('timerCompleted', 'true');
@@ -28,26 +24,26 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 timerElement.textContent = formatTime(timeLeft);
             }
-        }, 1000);
+        }
+
+        updateTimer(); // run immediately
+        const countdown = setInterval(updateTimer, 1000);
     }
 
-    function initializeTimer() {
-        const timerCompleted = localStorage.getItem('timerCompleted');
-        const savedEndTime = localStorage.getItem('timerEndTime');
-
-        if (timerCompleted === 'true') {
-            // Timer already completed
-            timerElement.textContent = "You are present!";
-            timerElement.style.color = "#008000";
-        } else if (savedEndTime) {
-            // Timer running, continue
-            runTimer(parseInt(savedEndTime));
+    if (timerCompleted === "true") {
+        // Timer already complete
+        timerElement.textContent = "You are present!";
+        timerElement.style.color = "#008000";
+    } else {
+        if (!endTime) {
+            // Agar timer set nahi hai (fresh login hua hai), tabhi naya timer 5 min ka start karo
+            const now = Date.now();
+            endTime = now + (5 * 60 * 1000); // 5 minutes in ms
+            localStorage.setItem('timerEndTime', endTime);
+            startTimer(endTime);
         } else {
-            // No timer running, need to start only if login just happened
-            timerElement.textContent = "Please login first!";
-            timerElement.style.color = "red";
+            // Agar already timer chal raha hai (refresh case), continue karo
+            startTimer(parseInt(endTime));
         }
     }
-
-    initializeTimer();
 });

@@ -275,43 +275,42 @@ def dashboard():
         save_attendance_code(t_code)  # Store code in database
         
         return jsonify({"t_code": t_code})
-    
-    # Route for fetching attendance summary data for a specific teacher 
-    @app.route("/attendance_summary", methods=["GET"])
-    def attendance_summary():
-        teacher_id = request.args.get('teacher_id')  # From frontend
-        if not teacher_id:
-            return jsonify({"success": False, "message": "Teacher ID is required!"}), 400
 
-        with db_manager.get_connection() as conn:
-            cursor = conn.cursor()
+# ✅ Corrected: Separate route for fetching attendance summary
+@app.route("/attendance_summary", methods=["GET"])
+def attendance_summary():
+    teacher_id = request.args.get('teacher_id')  # From frontend
+    if not teacher_id:
+        return jsonify({"success": False, "message": "Teacher ID is required!"}), 400
 
-            # Get Teacher Name
-            cursor.execute("SELECT name FROM teachers WHERE teacher_id = ?", (teacher_id,))
-            teacher = cursor.fetchone()
-            if not teacher:
-                return jsonify({"success": False, "message": "Teacher not found!"}), 404
+    with db_manager.get_connection() as conn:
+        cursor = conn.cursor()
 
-            teacher_name = teacher["name"]
+        # Get Teacher Name
+        cursor.execute("SELECT name FROM teachers WHERE teacher_id = ?", (teacher_id,))
+        teacher = cursor.fetchone()
+        if not teacher:
+            return jsonify({"success": False, "message": "Teacher not found!"}), 404
 
-            # Get Students who marked attendance with this teacher
-            today = datetime.utcnow().strftime("%Y-%m-%d")
-            cursor.execute("""
-                SELECT s.student_id, s.name 
-                FROM attendance a
-                JOIN students s ON a.student_id = s.student_id
-                WHERE a.teacher_id = ? AND a.date = ?
-            """, (teacher_id, today))
+        teacher_name = teacher["name"]
 
-            students = [{"student_id": row["student_id"], "student_name": row["name"]} for row in cursor.fetchall()]
+        # Get Students who marked attendance with this teacher
+        today = datetime.utcnow().strftime("%Y-%m-%d")
+        cursor.execute("""
+            SELECT s.student_id, s.name 
+            FROM attendance a
+            JOIN students s ON a.student_id = s.student_id
+            WHERE a.teacher_id = ? AND a.date = ?
+        """, (teacher_id, today))
 
-            return jsonify({
-                "success": True,
-                "teacher_name": teacher_name,
-                "total_present": len(students),
-                "students": students
-            }), 200
+        students = [{"student_id": row["student_id"], "student_name": row["name"]} for row in cursor.fetchall()]
 
+        return jsonify({
+            "success": True,
+            "teacher_name": teacher_name,
+            "total_present": len(students),
+            "students": students
+        }), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
