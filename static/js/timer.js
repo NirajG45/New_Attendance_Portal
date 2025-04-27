@@ -1,42 +1,53 @@
 document.addEventListener("DOMContentLoaded", function () {
     const timerElement = document.getElementById("timer");
 
-    const timerCompleted = localStorage.getItem('timerCompleted');
-    let endTime = localStorage.getItem('timerEndTime');
-
-    if (timerCompleted === "true") {
-        timerElement.textContent = "You are present!";
-        timerElement.style.color = "#008000";
-        return;
-    }
-
-    if (!endTime) {
-        // Naya login ke time 5 min ka timer set karo
-        const now = Date.now(); // Current time in milliseconds
-        endTime = now + 300 * 1000; // 5 minutes = 300000 ms
-        localStorage.setItem('timerEndTime', endTime);
-    } else {
-        endTime = parseInt(endTime);
-    }
-
     function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
         const secs = (seconds % 60).toString().padStart(2, '0');
         return `${minutes}:${secs}`;
     }
 
-    const countdown = setInterval(() => {
-        const now = Date.now();
-        const timeLeft = Math.max(0, Math.floor((endTime - now) / 1000)); // seconds remaining
+    function startCountdown(durationInSeconds) {
+        const endTime = Date.now() + durationInSeconds * 1000;
+        localStorage.setItem('timerEndTime', endTime);
+        localStorage.removeItem('timerCompleted');
+        runTimer(endTime);
+    }
 
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
+    function runTimer(endTime) {
+        const timerInterval = setInterval(() => {
+            const now = Date.now();
+            const timeLeft = Math.floor((endTime - now) / 1000);
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "You are present!";
+                timerElement.style.color = "#008000";
+                localStorage.setItem('timerCompleted', 'true');
+                localStorage.removeItem('timerEndTime');
+            } else {
+                timerElement.textContent = formatTime(timeLeft);
+            }
+        }, 1000);
+    }
+
+    function initializeTimer() {
+        const timerCompleted = localStorage.getItem('timerCompleted');
+        const savedEndTime = localStorage.getItem('timerEndTime');
+
+        if (timerCompleted === 'true') {
+            // Timer already completed
             timerElement.textContent = "You are present!";
-            timerElement.style.color = "#008000"; 
-            localStorage.setItem('timerCompleted', 'true');
-            localStorage.removeItem('timerEndTime');
+            timerElement.style.color = "#008000";
+        } else if (savedEndTime) {
+            // Timer running, continue
+            runTimer(parseInt(savedEndTime));
         } else {
-            timerElement.textContent = formatTime(timeLeft);
+            // No timer running, need to start only if login just happened
+            timerElement.textContent = "Please login first!";
+            timerElement.style.color = "red";
         }
-    }, 1000);
+    }
+
+    initializeTimer();
 });
