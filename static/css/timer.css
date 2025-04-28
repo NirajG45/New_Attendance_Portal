@@ -1,87 +1,119 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom right, #e2e8f0, #cbd5e1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
     min-height: 100vh;
-    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 20px;
 }
 
+/* Main container */
 .container {
-    background-color: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 16px;
-    padding: 30px 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     text-align: center;
+    max-width: 450px;
     width: 100%;
-    max-width: 500px; /* Ab thoda bada */
-    min-height: 220px; /* Height fix taaki chhota na lage */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    animation: fadeIn 1s ease-in-out;
 }
 
-h1 {
-    color: #1e293b;
-    font-size: 28px;
-    margin-bottom: 12px;
-    font-weight: 700;
+/* Heading */
+.container h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333333;
 }
 
+/* Paragraph */
+.container p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    color: #555555;
+}
+
+/* Timer */
 #timer {
-    font-size: 48px;
-    color: #111827;
+    font-size: 3.2rem;
     font-weight: bold;
-    margin-top: 20px;
-}
-
-#timer.present-text {
-    font-size: 34px;
-    color: #008000;
-    margin-top: 20px;
-}
-
-.btn-download, a.btn-download {
+    color: #4CAF50;
+    background: #f0f0f0;
+    padding: 25px 30px;
+    border-radius: 16px;
     display: inline-block;
-    margin-top: 25px;
-    padding: 14px 24px;
-    background-color: #2563eb;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    font-size: 18px;
+    min-width: 220px;
+    animation: pulse 2s infinite;
+    transition: transform 0.3s ease;
 }
 
-.btn-download:hover, a.btn-download:hover {
-    background-color: #1d4ed8;
+/* Timer Hover Effect */
+#timer:hover {
+    transform: scale(1.05);
 }
 
-/* For smaller devices */
-@media (max-width: 600px) {
-    .container {
-        min-height: 250px;
-        padding: 25px 15px;
+/* Fade In animation for container */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
     }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
-    h1 {
-        font-size: 24px;
+/* Pulse animation for timer */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background-color: #f0f0f0;
+    }
+    50% {
+        transform: scale(1.02);
+        background-color: #e0ffe0;
+    }
+    100% {
+        transform: scale(1);
+        background-color: #f0f0f0;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 40px 30px;
     }
 
     #timer {
-        font-size: 38px;
+        font-size: 2.8rem;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
     }
 
-    #timer.present-text {
-        font-size: 28px;
+    .container h1 {
+        font-size: 1.6rem;
     }
 
-    .btn-download, a.btn-download {
-        font-size: 16px;
-        padding: 12px 20px;
+    .container p {
+        font-size: 1rem;
+    }
+
+    #timer {
+        font-size: 2.2rem;
+        padding: 15px;
     }
 }

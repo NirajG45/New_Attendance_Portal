@@ -1,16 +1,15 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- HTML2PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 </head>
 <style>
-/* (Same dashboard styling as discussed) */
-* {
+    * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -175,8 +174,16 @@ button:hover {
         }
 
         document.getElementById("generateCode").addEventListener("click", generateCode);
+
         document.getElementById("downloadPDF").addEventListener("click", function () {
             const element = document.getElementById('attendanceSummary');
+
+            // Check if there's data in attendanceSummary
+            if (!element || element.innerHTML.trim() === "") {
+                alert("No attendance data available to download!");
+                return;
+            }
+
             var opt = {
                 margin: 0.5,
                 filename: 'Attendance_Summary.pdf',
@@ -184,7 +191,11 @@ button:hover {
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-            html2pdf().from(element).set(opt).save();
+
+            // 👇 Yahan thoda delay kar rahe hain
+            setTimeout(() => {
+                html2pdf().from(element).set(opt).save();
+            }, 500); // 500 milliseconds ka delay
         });
 
         document.addEventListener("DOMContentLoaded", function() {
