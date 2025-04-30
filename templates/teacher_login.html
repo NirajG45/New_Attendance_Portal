@@ -21,12 +21,13 @@
 
         <p>Don't have an account? <a href="/teacher_register">Register here</a></p>
     </div>
+
     <script>
         async function loginTeacher(event) {
             event.preventDefault();
 
-            var teacherId = document.getElementById("teacher_id").value;
-            var teacherPassword = document.getElementById("teacher_password").value;
+            const teacherId = document.getElementById("teacher_id").value.trim();
+            const teacherPassword = document.getElementById("teacher_password").value.trim();
 
             if (teacherId === "" || teacherPassword === "") {
                 alert("Please fill in both Teacher ID and Password.");
@@ -57,8 +58,12 @@
                         const data = await response.json();
 
                         if (response.ok) {
-                            console.log("success");
                             alert('Login successful!');
+
+                            // ✅ LocalStorage me teacherId save karo
+                            localStorage.setItem('teacherId', teacherId);
+
+                            // ✅ Redirect to Dashboard
                             window.location.href = '/dashboard';
                         } else {
                             alert('Login failed: ' + data.message);
@@ -68,7 +73,7 @@
                         alert('An error occurred. Please try again later.');
                     }
                 }, function(error) {
-                    alert("Location access denied. Please allow location to login.");
+                    alert("Location access denied. Please allow location access to login.");
                 });
             } else {
                 alert("Geolocation is not supported by this browser.");
@@ -76,28 +81,16 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-        // IDs ke input fields ko select karo
-        const studentIdInput = document.getElementById("student_id");
-        const teacherIdInput = document.getElementById("teacher_id");
+            // ✅ Page load hone pe purana teacherId hata do
+            localStorage.removeItem('teacherId');
 
-        // Function to auto-uppercase
-        function autoUppercase(inputElement) {
-            inputElement.addEventListener("input", function () {
-                this.value = this.value.toUpperCase();
-            });
-        }
-
-        // Student ID field mein uppercase lagao agar exist karta hai
-        if (studentIdInput) {
-            autoUppercase(studentIdInput);
-        }
-
-        // Teacher ID field mein uppercase lagao agar exist karta hai
-        if (teacherIdInput) {
-            autoUppercase(teacherIdInput);
-        }
-    });
-
+            const teacherIdInput = document.getElementById("teacher_id");
+            if (teacherIdInput) {
+                teacherIdInput.addEventListener("input", function () {
+                    this.value = this.value.toUpperCase();
+                });
+            }
+        });
     </script>
 </body>
 </html>

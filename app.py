@@ -1,19 +1,22 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
+from dotenv import load_dotenv
+
 import os
-from datetime import timedelta, datetime
 import random
 import logging
-from dotenv import load_dotenv
 import sqlite3
-from flask import send_file
+import pytz  # For timezone handling
+from datetime import datetime, timedelta  # Only once and clean
+from reportlab.pdfgen import canvas  # For generating PDF
 
-
-
-# Load environment variables
+# Load environment variables from .env file
 load_dotenv()
+
+# Define timezone using pytz
+timezone_utc = pytz.utc
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -131,10 +134,14 @@ def login_user(table, user_data, id_field):
         return {"success": True, "message": "Login successful!", "token": token}, 200
 
 
-# Helper Function to Check if Attendance Code is Expired
 def is_attendance_code_expired(timestamp):
-    code_time = datetime.fromisoformat(timestamp)
-    return (datetime.utcnow() - code_time).seconds > 1800
+    try:
+        code_time = datetime.fromisoformat(timestamp).replace(tzinfo=pytz.utc)
+        now = datetime.now(pytz.utc)
+        return (now - code_time).total_seconds() > 1800
+    except Exception as e:
+        print(f"Error checking attendance code expiry: {e}")
+        return True
 
 @app.route("/")
 def home():
@@ -242,12 +249,8 @@ def student_login():
 
             teacher_id, timestamp = code_entry
 
-            # # Ensure timestamp is properly formatted
-            # if is_attendance_code_expired(timestamp):
-            #     return jsonify({"success": False, "message": "Expired attendance code!"}), 400
-
             # Mark attendance
-            cursor.execute("""
+            cursor.execute(""" 
                 INSERT OR REPLACE INTO attendance 
                 (student_id, date, status, teacher_id, timestamp) 
                 VALUES (?, ?, ?, ?, ?)
@@ -276,41 +279,47 @@ def dashboard():
         
         return jsonify({"t_code": t_code})
 
-# ✅ Corrected: Separate route for fetching attendance summary
-@app.route("/attendance_summary", methods=["GET"])
-def attendance_summary():
-    teacher_id = request.args.get('teacher_id')  # From frontend
+# Route for attendance summary
+@app.route('/attendance_summary', methods=['GET'])
+def generate_attendance_pdf():
+    teacher_id = request.args.get('teacher_id')
     if not teacher_id:
         return jsonify({"success": False, "message": "Teacher ID is required!"}), 400
 
-    with db_manager.get_connection() as conn:
-        cursor = conn.cursor()
+    try:
+        with db_manager.get_connection() as conn:
+            cursor = conn.cursor()
+            today = datetime.utcnow().strftime("%Y-%m-%d")
+            cursor.execute("""
+                SELECT s.student_id, s.name 
+                FROM attendance a
+                JOIN students s ON a.student_id = s.student_id
+                WHERE a.teacher_id = ? AND a.date = ?
+            """, (teacher_id, today))
+            students = cursor.fetchall()
 
-        # Get Teacher Name
-        cursor.execute("SELECT name FROM teachers WHERE teacher_id = ?", (teacher_id,))
-        teacher = cursor.fetchone()
-        if not teacher:
-            return jsonify({"success": False, "message": "Teacher not found!"}), 404
+        # PDF File Path
+        filename = f"attendance_report_{teacher_id}_{today}.pdf"
+        filepath = os.path.join("static", filename)
 
-        teacher_name = teacher["name"]
+        # Create PDF
+        c = canvas.Canvas(filepath)
+        c.setFont("Helvetica", 14)
+        c.drawString(100, 800, f"Attendance Report for Teacher ID: {teacher_id} on {today}")
+        c.setFont("Helvetica", 12)
+        
+        y = 760
+        for student in students:
+            c.drawString(100, y, f"ID: {student['student_id']} - Name: {student['name']}")
+            y -= 20
+        
+        c.save()
 
-        # Get Students who marked attendance with this teacher
-        today = datetime.utcnow().strftime("%Y-%m-%d")
-        cursor.execute("""
-            SELECT s.student_id, s.name 
-            FROM attendance a
-            JOIN students s ON a.student_id = s.student_id
-            WHERE a.teacher_id = ? AND a.date = ?
-        """, (teacher_id, today))
+        # Return file to frontend
+        return send_file(filepath, as_attachment=True)
 
-        students = [{"student_id": row["student_id"], "student_name": row["name"]} for row in cursor.fetchall()]
-
-        return jsonify({
-            "success": True,
-            "teacher_name": teacher_name,
-            "total_present": len(students),
-            "students": students
-        }), 200
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
